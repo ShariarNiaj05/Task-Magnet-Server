@@ -8,6 +8,8 @@ const port = process.env.PORT || 5000;
 app.use(cors({
   origin: [
     'http://localhost:5173',
+    'https://task-magnet-pro.web.app',
+    'https://task-magnet-pro.firebaseapp.com'
 
   ],
 
@@ -62,13 +64,40 @@ async function run() {
 
     app.patch('/tasks/:id', async (req, res) => {
       const id = req.params.id;
-      console.log('checking body', req.body);
+      console.log('checking body', id);
+
+      // const newStatus = req.body.taskStatus;
+
+     /*  const result = await taskCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { taskStatus: newStatus } }
+      ); */
+
+      //  res.send(result)
+    })
+
+
+    app.patch('/tasks/changeStatus/:id', async (req, res) => {
+      const id = req.params.id;
       const newStatus = req.body.taskStatus;
+      console.log('checking body', newStatus);
       const result = await taskCollection.updateOne(
         { _id: new ObjectId(id) },
         { $set: { taskStatus: newStatus } }
       );
-      //  res.send(result)
+       res.send(result)
+    })
+
+    app.post('/tasks/updateOrder/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+     /*  const newStatus = req.body.taskStatus;
+      console.log('checking body', newStatus);
+      const result = await taskCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { taskStatus: newStatus } }
+      );
+       res.send(result) */
     })
 
 
