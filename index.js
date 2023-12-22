@@ -10,7 +10,7 @@ app.use(cors({
     'http://localhost:5173',
 
   ],
-  
+
 }))
 app.use(express.json());
 
@@ -41,13 +41,44 @@ async function run() {
     })
 
 
-    app.get('/tasks/:email', async (req, res) => {
-      const email = req.params.email;
-     
-      console.log('checking email',email);
-      // const filter = {email}
+    app.put('/tasks/:id', async (req, res) => {
+      const id = req.params.id
+      console.log('Received ID:', id);
+      const query = { _id: new ObjectId(id) }
+      const body = req.body;
 
-      const result = await taskCollection.find().toArray();
+      console.log( query, body);
+      const updateTask = {
+        $set: {
+          ...body
+        }
+      }
+      const option = { upsert: true }
+      const result = await taskCollection.updateOne(query, updateTask, option)
+      // console.log(result);
+      res.send(result)
+    })
+
+
+    app.patch('/tasks/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log('checking body', req.body);
+      const newStatus = req.body.taskStatus;
+      const result = await taskCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { taskStatus: newStatus } }
+      );
+      //  res.send(result)
+    })
+
+
+    app.get('/tasks', async (req, res) => {
+      const email = req.query.email;
+
+      const filter = { email }
+      console.log('checking email', filter);
+
+      const result = await taskCollection.find(filter).toArray();
 
       res.send(result)
     })
@@ -80,9 +111,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Task Magnet server is running')
-  })
+  res.send('Task Magnet server is running')
+})
 
 app.listen(port, () => {
-    console.log(`Task Magnet server is running on the port: ${port}`);
-  })
+  console.log(`Task Magnet server is running on the port: ${port}`);
+})
